@@ -9,13 +9,21 @@ import (
 
 // Load pulls the config data from the config file
 func Load() (*Configuration, error) {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
+	viper.SetConfigName(".env")
+	viper.SetConfigType("env")
 	viper.AddConfigPath(".")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("reading config file: %w", err)
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return nil, fmt.Errorf("error loading config file: %s", err)
+		}
+		// No config file found. Using environment variables
+		viper.BindEnv("PORT")
+		for _, key := range viper.AllKeys() {
+			val := viper.Get(key)
+			viper.Set(key, val)
+		}
 	}
 
 	config := Configuration{}
