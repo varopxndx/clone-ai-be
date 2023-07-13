@@ -1,0 +1,16 @@
+version: "2.4"
+
+services:
+  backend:
+    image: clone-ai-be:latest
+    container_name: clone-ai-be
+    ports:
+      - "8080:8080"
+    networks:
+      - internal-net
+    env_file:
+      - .env
+
+networks:
+  internal-net:
+    name: internal
