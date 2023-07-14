@@ -40,7 +40,7 @@ func (s *Service) GetSample() (*model.SampleResponse, error) {
 // requestAnswerFromGPT request a response from OpenAI getting the requests
 func (s *Service) requestAnswerFromGPT(ctx context.Context, message string) (openai.ChatCompletionResponse, error) {
 	// Open our jsonFile
-	jsonFile, err := os.Open("/chats.json")
+	jsonFile, err := os.Open("./chats.json")
 	if err != nil {
 		return openai.ChatCompletionResponse{}, err
 	}
@@ -60,7 +60,6 @@ func (s *Service) requestAnswerFromGPT(ctx context.Context, message string) (ope
 			Messages: messages,
 		},
 	)
-
 	return resp, nil
 }
 
