@@ -6,6 +6,7 @@ import "github.com/gin-gonic/gin"
 type Controller interface {
 	Ping(*gin.Context)
 	GetSample(*gin.Context)
+	GetAnswer(*gin.Context)
 }
 
 // New creates the router
@@ -15,6 +16,8 @@ func New(controller Controller) *gin.Engine {
 	v1 := r.Group("/v1")
 	v1.GET("/ping", controller.Ping)
 	v1.GET("/sample", controller.GetSample)
+
+	v1.POST("/get-answer", controller.GetAnswer)
 
 	return r
 }

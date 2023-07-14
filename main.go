@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// create service layer
-	service := service.New()
+	service := service.New(cfg.OpenAIToken)
 
 	// create usecase layer
 	usecase := usecase.New(service, logger)
