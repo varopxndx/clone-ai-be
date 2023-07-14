@@ -26,3 +26,7 @@ mocks: ## Create mocks
 	GO111MODULE=on mockery --dir=controller --name=Usecase --case=snake --output=controller/mocks --outpkg=mocks
 	GO111MODULE=on mockery --dir=router --name=Controller --case=snake --output=router/mocks --outpkg=mocks
 	GO111MODULE=on mockery --dir=usecase --name=Service --case=snake --output=usecase/mocks --outpkg=mocks
+
+.PHONY: swagger
+swagger: ## creates an openAPI definition (swagger file) for the API
+	swag init --parseDependency  --parseInternal --parseDepth 1
