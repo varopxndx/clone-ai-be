@@ -28,6 +28,7 @@ RUN go build -trimpath -o clone-ai-be
 # Later, it will be copied as the / (root) of the output image.
 WORKDIR /dist
 RUN cp /build/clone-ai-be ./clone-ai-be
+RUN cp /build/assets/chats.json ./chats.json
 
 # Copy or create other directories/files your app needs during runtime.
 # E.g. this example uses /data as a working directory that would probably

@@ -20,6 +20,7 @@ func Load() (*Configuration, error) {
 		}
 		// No config file found. Using environment variables
 		viper.BindEnv("PORT")
+		viper.BindEnv("OPEN_API_KEY")
 		for _, key := range viper.AllKeys() {
 			val := viper.Get(key)
 			viper.Set(key, val)

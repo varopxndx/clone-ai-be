@@ -42,7 +42,7 @@ func (s *Service) requestAnswerFromGPT(message string) (model.RequestAnswerGPT, 
 	userToken := fmt.Sprintf("Bearer %s", s.openAIToken)
 
 	// Open our jsonFile
-	jsonFile, err := os.Open("/assets/chats.json")
+	jsonFile, err := os.Open("/chats.json")
 	if err != nil {
 		return model.RequestAnswerGPT{}, err
 	}
@@ -58,10 +58,10 @@ func (s *Service) requestAnswerFromGPT(message string) (model.RequestAnswerGPT, 
 
 	resp, err := s.client.
 		R().
-		SetHeader("Accept", "application/json").
+		SetHeader("Content-Type", "application/json").
 		SetHeader("Authorization", userToken).
-		SetBody(fmt.Sprintf(`{"model":"gpt-4", "messages":"%s"}`, messages)).
-		Get(url)
+		SetBody(fmt.Sprintf(`{"model":"gpt-4", "messages":%s}`, messages)).
+		Post(url)
 
 	request := model.RequestAnswerGPT{}
 	if json.Unmarshal(resp.Body(), &request); err != nil {
