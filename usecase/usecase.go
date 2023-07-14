@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"context"
+
+	"github.com/sashabaranov/go-openai"
 	"github.com/varopxndx/clone-ai-be/model"
 
 	"github.com/rs/zerolog"
@@ -9,7 +12,7 @@ import (
 // Service has the service layer methods
 type Service interface {
 	GetSample() (*model.SampleResponse, error)
-	GetAnswer(message string) (*model.RequestAnswerGPT, error)
+	GetAnswer(ctx context.Context, message string) (*openai.ChatCompletionResponse, error)
 }
 
 // Usecase structure
@@ -39,9 +42,9 @@ func (u *Usecase) GetSample() (*model.SampleResponse, error) {
 }
 
 // GetAnswer Call the service layout to get the message
-func (u *Usecase) GetAnswer(message string) (*model.Answer, error) {
+func (u *Usecase) GetAnswer(ctx context.Context, message string) (*model.Answer, error) {
 	// bussiness logic
-	response, err := u.service.GetAnswer(message)
+	response, err := u.service.GetAnswer(ctx, message)
 	if err != nil {
 		u.logger.Error().Msg("GetAnswer: getting open AI request")
 		return nil, err
