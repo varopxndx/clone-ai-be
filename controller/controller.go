@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/varopxndx/clone-ai-be/model"
@@ -12,7 +13,7 @@ import (
 // Usecase contains the usecase methods
 type Usecase interface {
 	GetSample() (*model.SampleResponse, error)
-	GetAnswer(message string) (*model.Answer, error)
+	GetAnswer(ctx context.Context, message string) (*model.Answer, error)
 }
 
 // Controller structure
@@ -57,7 +58,7 @@ func (c *Controller) GetAnswer(g *gin.Context) {
 		g.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	response, err := c.usecase.GetAnswer(answerRequest.Message)
+	response, err := c.usecase.GetAnswer(g.Request.Context(), answerRequest.Message)
 	if err != nil {
 		c.logger.Error().Msgf("error getting sample: %s", err.Error())
 		g.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

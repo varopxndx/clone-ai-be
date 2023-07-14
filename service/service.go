@@ -1,26 +1,27 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/sashabaranov/go-openai"
 	"github.com/varopxndx/clone-ai-be/model"
 )
 
 // Service contains service client
 type Service struct {
-	client      *resty.Client
-	openAIToken string
+	client       *resty.Client
+	openAIclient *openai.Client
 }
 
 // New returns a service struct
 func New(openAIToken string) *Service {
 	return &Service{
-		client:      resty.New(),
-		openAIToken: openAIToken,
+		client:       resty.New(),
+		openAIclient: openai.NewClient(openAIToken),
 	}
 }
 
@@ -37,43 +38,36 @@ func (s *Service) GetSample() (*model.SampleResponse, error) {
 }
 
 // requestAnswerFromGPT request a response from OpenAI getting the requests
-func (s *Service) requestAnswerFromGPT(message string) (model.RequestAnswerGPT, error) {
-	url := "https://api.openai.com/v1/chat/completions"
-	userToken := fmt.Sprintf("Bearer %s", s.openAIToken)
-
+func (s *Service) requestAnswerFromGPT(ctx context.Context, message string) (openai.ChatCompletionResponse, error) {
 	// Open our jsonFile
 	jsonFile, err := os.Open("/chats.json")
 	if err != nil {
-		return model.RequestAnswerGPT{}, err
+		return openai.ChatCompletionResponse{}, err
 	}
 	defer jsonFile.Close()
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	var messages []model.GPTMessage
+	var messages []openai.ChatCompletionMessage
 	json.Unmarshal(byteValue, &messages)
-	messages = append(messages, model.GPTMessage{
+	messages = append(messages, openai.ChatCompletionMessage{
 		Role:    "user",
 		Content: message,
 	})
 
-	resp, err := s.client.
-		R().
-		SetHeader("Content-Type", "application/json").
-		SetHeader("Authorization", userToken).
-		SetBody(fmt.Sprintf(`{"model":"gpt-4", "messages":%s}`, messages)).
-		Post(url)
+	resp, err := s.openAIclient.CreateChatCompletion(ctx,
+		openai.ChatCompletionRequest{
+			Model:    openai.GPT4,
+			Messages: messages,
+		},
+	)
 
-	request := model.RequestAnswerGPT{}
-	if json.Unmarshal(resp.Body(), &request); err != nil {
-		return model.RequestAnswerGPT{}, err
-	}
-	return request, nil
+	return resp, nil
 }
 
 // GetAnswer call OpenAI API
-func (s *Service) GetAnswer(message string) (*model.RequestAnswerGPT, error) {
+func (s *Service) GetAnswer(ctx context.Context, message string) (*openai.ChatCompletionResponse, error) {
 	// mocked data
-	response, err := s.requestAnswerFromGPT(message)
+	response, err := s.requestAnswerFromGPT(ctx, message)
 	if err != nil {
 		return nil, err
 	}
