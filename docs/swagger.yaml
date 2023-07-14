@@ -1,0 +1,39 @@
+basePath: /
+definitions:
+  model.Answer:
+    properties:
+      text:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Clone AI
+  title: Auth API
+  version: "1.0"
+paths:
+  /ping:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Checks if the application is up and running
+  /v1/get-answer:
+    post:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Answer'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Sends a question to Open AI and receives a response
+swagger: "2.0"

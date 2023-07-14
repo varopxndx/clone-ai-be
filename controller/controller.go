@@ -30,7 +30,12 @@ func New(usecase Usecase, logger zerolog.Logger) *Controller {
 	}
 }
 
-// Ping checks if the application is up and running
+// Ping godoc
+// @Summary Checks if the application is up and running
+// @Accept json
+// @Success 200
+// @Failure 400
+// @Router /ping [get]
 func (c *Controller) Ping(g *gin.Context) {
 	g.JSON(http.StatusOK, "service healthy")
 }
@@ -49,6 +54,12 @@ func (c *Controller) GetSample(g *gin.Context) {
 }
 
 // GetAnswer Request a response from Open AI
+// @Summary Sends a question to Open AI and receives a response
+// @Accept json
+// @Success 200 {object} model.Answer
+// @Failure 400 "Bad Request"
+// @Failure 500 "Internal Server Error"
+// @Router /v1/get-answer [post]
 func (c *Controller) GetAnswer(g *gin.Context) {
 	// call usecase layer
 	answerRequest := model.AnswerRequest{}

@@ -24,6 +24,13 @@ const (
 	ExitAbnormalErrorLoadingConfiguration = iota
 )
 
+// @title           Auth API
+// @version         1.0
+// @description     Clone AI
+
+// @host     localhost:8080
+// @BasePath  /
+
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
