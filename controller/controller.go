@@ -12,6 +12,7 @@ import (
 // Usecase contains the usecase methods
 type Usecase interface {
 	GetSample() (*model.SampleResponse, error)
+	GetAnswer(message string) (*model.Answer, error)
 }
 
 // Controller structure
@@ -38,6 +39,25 @@ func (c *Controller) GetSample(g *gin.Context) {
 	// call usecase layer
 
 	response, err := c.usecase.GetSample()
+	if err != nil {
+		c.logger.Error().Msgf("error getting sample: %s", err.Error())
+		g.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	}
+
+	g.JSON(http.StatusOK, response)
+}
+
+// GetAnswer Request a response from Open AI
+func (c *Controller) GetAnswer(g *gin.Context) {
+	// call usecase layer
+	answerRequest := model.AnswerRequest{}
+	err := g.ShouldBind(&answerRequest)
+	if err != nil {
+		c.logger.Error().Msg(err.Error())
+		g.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	response, err := c.usecase.GetAnswer(answerRequest.Message)
 	if err != nil {
 		c.logger.Error().Msgf("error getting sample: %s", err.Error())
 		g.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
